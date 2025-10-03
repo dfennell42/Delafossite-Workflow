@@ -20,6 +20,12 @@ To use the workflow, you will need the following files:
 - A SLURM runscript for VASP calculations
 
 Examples for the above files can be found in the ~/wf-user-files/example-files directory following execution of `wf init`. 
+
+## Installation
+If you would like to use the workflow as a regular installation, install the .whl file from the release. 
+
+If you would like to use the workflow as an editable installation, install the .tar.gz file from the release. The workflow uses Poetry as a package builder and dependency manager. To use the workflow as an editable installation, refer to the [Poetry Docs](https://python-poetry.org/docs/). 
+
 ## Workflow Commands (`wf`):
 
 **Usage**:

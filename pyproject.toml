@@ -1,0 +1,28 @@
+[project]
+name = "delafossite-wf"
+version = "1.0.0"
+description = "A command line interface tool for modifying delafossite structures for VASP calculations via workflow"
+authors = [
+    {name = "Dorothea Fennell",email = "dfennell1@bnl.gov"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "typer (>=0.16.0,<0.17.0)",
+    "ase (>=3.25.0,<4.0.0)",
+    "pymatgen (>=2025.6.14,<2026.0.0)",
+    "plotly (>=6.2.0,<7.0.0)",
+    "custodian (>=2025.5.12,<2026.0.0)",
+    "python-dotenv (>=1.1.1,<2.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "delafossite_wf", from = "src"}]
+
+[tool.poetry.scripts]
+wf = "delafossite_wf.main:app"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

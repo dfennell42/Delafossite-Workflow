@@ -1,0 +1,175 @@
+# `wf`
+
+**Usage**:
+
+```console
+$ wf [OPTIONS] COMMAND [ARGS]...
+```
+
+**Options**:
+
+* `-v, --version`
+* `--install-completion`: Install completion for the current shell.
+* `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
+* `--help`: Show this message and exit.
+
+**Commands**:
+
+* `init`: Initializes workflow settings.
+* `modify`: Modifies delafossite structure based on...
+* `removepairs`: Removes atom pairs from structures
+* `gete`: Gets pristine E and E vac
+* `pdos`: sets up PDOS calculations
+* `parse`: Parses PDOS data into individual files and...
+* `integrate`: Integrates the PDOS files.
+* `plot`: Plots PDOS
+* `submit`: Submits vasp calculations.
+* `check`: Checks vasp.out for errors and fixes and...
+
+## `wf init`
+
+Initializes workflow settings.
+
+**Usage**:
+
+```console
+$ wf init [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `wf modify`
+
+Modifies delafossite structure based on user input. Needs Mods.txt
+
+**Usage**:
+
+```console
+$ wf modify [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `wf removepairs`
+
+Removes atom pairs from structures
+
+**Usage**:
+
+```console
+$ wf removepairs [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `wf gete`
+
+Gets pristine E and E vac
+
+**Usage**:
+
+```console
+$ wf gete [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `wf pdos`
+
+sets up PDOS calculations
+
+**Usage**:
+
+```console
+$ wf pdos [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `wf parse`
+
+Parses PDOS data into individual files and integrates
+
+**Usage**:
+
+```console
+$ wf parse [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `wf integrate`
+
+Integrates the PDOS files. Note: Files must be parsed before integration. The parse command parses AND integrates, so this command is only if integration needs to be performed on already parsed files.
+
+**Usage**:
+
+```console
+$ wf integrate [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `wf plot`
+
+Plots PDOS
+
+**Usage**:
+
+```console
+$ wf plot [OPTIONS]
+```
+
+**Options**:
+
+* `-n, --no-show-image`: Do not display plot in X11 window after running command.
+* `-c, --custom-sigma`: Use custom value for Gaussian smearing. Default is 1.5
+* `--help`: Show this message and exit.
+
+## `wf submit`
+
+Submits vasp calculations.
+
+**Usage**:
+
+```console
+$ wf submit [OPTIONS] [CALC]
+```
+
+**Arguments**:
+
+* `[CALC]`: The type of calculation to submit. Options: struc: Pristine or vacancy surface calculations. pdos: PDOS calculations  [default: struc]
+
+**Options**:
+
+* `-v, --vac`: Run only vacancy calculations. Does not work with calc = pdos
+* `--help`: Show this message and exit.
+
+## `wf check`
+
+Checks vasp.out for errors and fixes and resubmits calculations if possible.
+
+**Usage**:
+
+```console
+$ wf check [OPTIONS]
+```
+
+**Options**:
+
+* `-n, --no-submit`: Use -n or --no-submit to run check without autosubmitting calculations  [default: True]
+* `--help`: Show this message and exit.

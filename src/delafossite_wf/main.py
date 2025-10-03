@@ -94,10 +94,9 @@ def integrate():
 @app.command()
 def plot(
         show:Annotated[bool,typer.Option('--no-show-image','-n',help='Do not display plot in X11 window after running command.',show_default=False)] = True,
-        sigma:Annotated[bool,typer.Option('--custom-sigma','-c',help='Use custom value for Gaussian smearing. Default is 1.5',show_default=False)] = False
     ):
     '''Plots PDOS'''
-    plot_pdos(os.getcwd(),show,sigma)
+    plot_pdos(os.getcwd(),show)
     
 @app.command()
 def submit(

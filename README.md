@@ -158,7 +158,6 @@ $ wf plot [OPTIONS]
 **Options**:
 
 * `-n, --no-show-image`: Do not display plot in X11 window after running command.
-* `-c, --custom-sigma`: Use custom value for Gaussian smearing. Default is 1.5
 * `--help`: Show this message and exit.
 
 ## `wf submit`

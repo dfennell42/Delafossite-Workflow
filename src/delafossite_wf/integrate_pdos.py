@@ -23,25 +23,13 @@ def get_dirs(base_dir):
 
 def get_files(pdos_dir):
     '''Gets files of all atoms from pdos directory'''
-    m_filelist = []
-    o_filelist = []
-    li_filelist = []
+    filelist = []
     for file in os.listdir(pdos_dir):
         if file.endswith('_total.dat'):
             filepath = os.path.join(pdos_dir,file)
-            if file.startswith('O'):
-                o_filelist.append(filepath)
-            elif file.startswith('Al'):
-                m_filelist.append(filepath)
-            elif file.startswith('Li'):
-                li_filelist.append(filepath)
-            else:
-                m_filelist.append(filepath)
-    m_filelist.sort()
-    o_filelist.sort()
-    li_filelist.sort()
-
-    return m_filelist, o_filelist,li_filelist
+            filelist.append(filepath)
+    filelist.sort()
+    return filelist
 
 def int_pdos(data,up_idx,down_idx,lower,upper,block,diff=True):
     """Integrates PDOS in specified windows."""
@@ -122,6 +110,8 @@ def int_d_states(filelist):
             if ele.block =='s':
                 up_idx = 1
                 down_idx = 2
+                e_lower = -20
+                block = 's'
             elif ele.block == 'p':
                 up_idx = 3
                 down_idx = 4
@@ -135,25 +125,21 @@ def int_d_states(filelist):
             elif ele.block == 'f':
                 up_idx = 7
                 down_idx = 8
-            #the atom_total.dat files have to be unpacked because they're made with np.savetext
+                e_lower = -15
+                block = 'f'
+                #the atom_total.dat files have to be unpacked because they're made with np.savetext
             data = np.genfromtxt(file,skip_header=1,unpack=True)
             
             #integrate from lower bound to 0 to get total # of electrons and net spin
             e_tot, spin = int_pdos(data,up_idx,down_idx,e_lower,0,block)
             
-            #integrate from -8 to -6 to get d/p hybridization - for d-block metals only
-            if ele.block == 'd':
-                tot_win = int_pdos(data,up_idx,down_idx,-8,0,block,diff=False)
-                hdp = tot_win - e_tot
-            else:
-                hdp = 0
             #get os
             ox = get_os(ele,e_tot)
             #append data to list
             if ele.block == 'p':
-                m_data.append(f'\n{ele},{index},{e_tot},{ox},{spin},{hdp},s+p')
+                m_data.append(f'\n{ele},{index},{e_tot},{ox},{spin},{ele.block}')
             else:
-                m_data.append(f'\n{ele},{index},{e_tot},{ox},{spin},{hdp},{ele.block}')
+                m_data.append(f'\n{ele},{index},{e_tot},{ox},{spin},{ele.block}')
     return m_data
 
 def print_data(pdos_dir,data,fname,header):
@@ -176,30 +162,13 @@ def integrate_all_pdos(base_dir):
     selected_data = []
     for pdos_dir in pdos_dirs:
         #get filelists
-        m_filelist, o_filelist, li_filelist = get_files(pdos_dir)
+        filelist = get_files(pdos_dir)
         #integrate d states
-        m_data = int_d_states(m_filelist)
-        #determine index numbers for m1, m2 & m3
-        li_rem = 18 - len(li_filelist)
-        m1 = str(21 - li_rem)
-        m2 = str(23 - li_rem)
-        m3 = str(25 - li_rem)
-        for x in m_data:
-            x = x.strip('\n')
-            atom_index = x.split(',')[1]
-            if atom_index in [m1,m2,m3]:
-                pdir = pdos_dir.split('/')
-                for p in pdir:
-                    if p.startswith('Modification_'):
-                        mod_name = p
-                selected_data.append(f'\n{mod_name},{x}')
+        m_data = int_d_states(filelist)
         #print data to csv
-        mod_header = 'Element,Atom index,e_tot,OS,spin,H d/p,Orbital'
+        mod_header = 'Element,Atom index,e_tot,OS,spin,Orbital'
         m_data.sort(key=sort_by_index)
         print_data(pdos_dir,m_data,'integrated-pdos',mod_header)
-    selected_header = 'Modification dir,Element,Atom index,e_tot,OS,spin,H d/p,Valence shell(s)'
-    selected_data.sort(key=sort_by_index)
-    print_data(base_dir,selected_data,'selected-int-pdos',selected_header)
 
 def sort_by_index(data):
     '''For sorting the lists of data by the atom index rather than by element'''

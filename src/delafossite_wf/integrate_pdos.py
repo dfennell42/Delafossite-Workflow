@@ -115,12 +115,12 @@ def int_d_states(filelist):
             elif ele.block == 'p':
                 up_idx = 3
                 down_idx = 4
-                e_lower = -8
+                e_lower = -10
                 block = 'p'
             elif ele.block == 'd':
                 up_idx = 5
                 down_idx = 6
-                e_lower = -6
+                e_lower = -10
                 block = 'd'
             elif ele.block == 'f':
                 up_idx = 7

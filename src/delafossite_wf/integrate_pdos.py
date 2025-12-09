@@ -173,14 +173,8 @@ def integrate_all_pdos(base_dir):
 def sort_by_index(data):
     '''For sorting the lists of data by the atom index rather than by element'''
     data_list = data.split(',')
-    if len(data_list) == 7:
+    if len(data_list) == 6:
         index = int(data_list[1])
         return index
-    elif len(data_list) == 8:
-        index = int(data_list[2])
-        dirname = data_list[0].strip('\n')
-        dir_num = dirname.split('_')[1]
-        num = int(dir_num)
-        return (num,index)
 
 

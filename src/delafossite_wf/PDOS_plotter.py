@@ -17,7 +17,6 @@ from pathlib import Path
 import sys
 import os
 from PIL import Image, ImageShow
-from scipy.ndimage import gaussian_filter
 #define functions
 def make_plots(option=None, plot_choice=None, indices=None, titles=None):
     '''Makes subplots based on user input'''
@@ -70,6 +69,7 @@ def fermi_energy(base_dir):
 def get_filelist(pdos_dir,indices, suffix):
     filelist =[]
     for i in indices:
+        i = i.strip()
         file = list(Path(f'{pdos_dir}').glob(f'*[a-zA-Z]{i}{suffix}'))
         if Path(file[0]).exists() == True:
             filelist.append(file[0])
@@ -151,14 +151,13 @@ def check_input(user_input):
 def plot_pdos(base_dir, show_img=True):
     print('\n If you would like to exit, type "exit" into any input prompt.')
     print('\nWould you like this to run recursively?')
-    print('\nEntire either "y" for all directories, or input the number(s) of the directories. If inputting a list, separate the numbers with a space.')
+    print('\nEntire either "y" for all directories, or input the number(s) of the directories (comma-separated).')
     rec = input()
     check_input(rec)
     print("\nWould you like to plot the PDOS of all structures, the pristine structures, or the vacancy structures?")
     print("1: All")
     print("2: Pristine")
-    print("3: Li vacancy")
-    print("4: O vacancy")
+    print("3: Vacancy")
     struc = input('Enter the number of your choice: ')
     check_input(struc)
     pdos_dirs = []
@@ -173,14 +172,12 @@ def plot_pdos(base_dir, show_img=True):
                 if root.endswith('VASP_inputs/PDOS'):
                     pdos_dirs.append(root)
             elif struc =='3':
-                if root.endswith('_Removed/PDOS') and prev_dir.startswith('Li'):
-                    pdos_dirs.append(root)
-            elif struc =='4':
-                if root.endswith('_Removed/PDOS')and prev_dir.startswith('O'):
+                if root.endswith('_Removed/PDOS'):
                     pdos_dirs.append(root)
     else:
-        dir_num = rec.split()
+        dir_num = rec.split(',')
         for num in dir_num:
+            num = num.strip()
             for root, dirs, files in os.walk(base_dir):
                 if f'Modification_{num}/' in root:
                     dirname = os.path.dirname(root)
@@ -192,14 +189,11 @@ def plot_pdos(base_dir, show_img=True):
                         if root.endswith('VASP_inputs/PDOS'):
                             pdos_dirs.append(root)
                     elif struc =='3':
-                        if root.endswith('_Removed/PDOS') and prev_dir.startswith('Li'):
-                            pdos_dirs.append(root)
-                    elif struc =='4':
-                        if root.endswith('_Removed/PDOS') and prev_dir.startswith('O'):
+                        if root.endswith('_Removed/PDOS'):
                             pdos_dirs.append(root)
     
     print("\nPlease input the files you'd like to plot")
-    print("If plotting PDOS for single atoms, input atom index. If inputting multiple indices, separate them with a space.")
+    print("If plotting PDOS for single atoms, input atom index. Multiple indices should be comma-separated.")
     print("If plotting total DOS, input 'TotalDos'")
     choice = input()
     check_input(choice)
@@ -207,7 +201,7 @@ def plot_pdos(base_dir, show_img=True):
        #moved this to the for loop
        fname='TotalDos.dat'
     else:
-        indices = choice.split()
+        indices = choice.split(',')
         print("\nWould you like to plot the PDOS with the orbitals summed by type (all d summed, etc.) or with individual orbitals (dxy,dxz,etc.)?")
         print("1: Summed")
         print("2: Individual")
@@ -241,13 +235,11 @@ def plot_pdos(base_dir, show_img=True):
             fig = make_plots()
             #gettin data
             data = np.genfromtxt(file, skip_header=1)
-            #add gaussian smearing to data
-            smeared_data = gaussian_filter(data, sigma=1.5, axes=0)
             #defines x(dos) and y(energy) values
             #multiply the down values by -1 to show pdos by spin
-            energy = smeared_data[:,0]-fermi
-            up = smeared_data[:,1]
-            down = smeared_data[:,2]*-1
+            energy = data[:,0]-fermi
+            up = data[:,1]
+            down = data[:,2]*-1
             fig.add_scatter(x=up, y = energy, mode = 'lines', fill = 'tozerox')
             fig.add_scatter(x=down, y = energy, mode = 'lines', fill = 'tozerox')
             fig.update_layout(title_text = 'Total Density of States', showlegend=False)

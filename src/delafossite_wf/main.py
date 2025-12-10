@@ -32,6 +32,8 @@ from .PDOS_plotter import plot_pdos
 from .intialize import init_settings
 #error check
 from .err_check import err_fix
+#update
+from .wf_update import check_vrsn
 
 #create app
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -127,4 +129,14 @@ def check(
         ):
     '''Checks vasp.out for errors and fixes and resubmits calculations if possible.'''
     err_fix(os.getcwd(),submit)
-    
+
+@app.command()
+def update(
+        editable:Annotated[bool,typer.Option("--editable",'-e',help='Install the workflow as an editable package.')] = False,
+):
+    '''Checks workflow version and updates if necessary.'''
+    if editable == True:
+        suffix = '.tar.gz'
+    elif editable == False:
+        suffix = '.whl'
+    check_vrsn(suffix)

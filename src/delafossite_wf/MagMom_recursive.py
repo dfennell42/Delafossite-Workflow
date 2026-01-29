@@ -45,15 +45,15 @@ def assign_magnetic_moments(atom_to_element, spin_pairs):
     magmom = [magnetic_moments.get(element, 0.6) for element in atom_to_element]  # Default all moments
 
     for (atom1, atom2), spin in spin_pairs.items():
-        moment1 = magnetic_moments.get(atom_to_element[atom1 - 1], 0.6)  # Atom1 moment
-        moment2 = magnetic_moments.get(atom_to_element[atom2 - 1], 0.6)  # Atom2 moment
+        moment1 = magnetic_moments.get(atom_to_element[atom1], 0.6)  # Atom1 moment
+        moment2 = magnetic_moments.get(atom_to_element[atom2], 0.6)  # Atom2 moment
 
         if spin == "up":
-            magmom[atom1 - 1] = moment1
-            magmom[atom2 - 1] = moment2
+            magmom[atom1] = moment1
+            magmom[atom2] = moment2
         elif spin == "down":
-            magmom[atom1 - 1] = -moment1
-            magmom[atom2 - 1] = -moment2
+            magmom[atom1] = -moment1
+            magmom[atom2] = -moment2
 
     return magmom
 

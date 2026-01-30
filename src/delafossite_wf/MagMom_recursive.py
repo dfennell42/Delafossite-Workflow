@@ -137,17 +137,17 @@ def process_poscar_files():
         
         print(f"Generated MAGMOM line saved to {output_file}.")
         
-def process_pair_rem_files():
+def process_pair_mod_files(mod):
     # Find all POSCAR files with the pattern POSCAR_modified_*.vasp
-    def get_dirs():
-        '''Runs through all directories in base directory and returns list of vacancy directories.'''
+    def get_dirs(mod):
+        '''Runs through all directories in base directory and returns list of vacancy/adsorption directories.'''
         vac_dirs=[]
         for root, dirs, files in os.walk(os.getcwd()):
-            if root.endswith('Removed') and 'INCAR' in os.listdir(root):
+            if root.endswith(mod) and 'INCAR' in os.listdir(root):
                 vac_dirs.append(root)
         vac_dirs.sort()
         return vac_dirs
-    vac_dirs = get_dirs()
+    vac_dirs = get_dirs(mod)
     poscar_files = []
     for vac_dir in vac_dirs:
         for root, dirs, files in os.walk(vac_dir):

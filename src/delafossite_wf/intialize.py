@@ -12,7 +12,7 @@ import dotenv
 #define functions
 def copy_files(source_dir, dest_dir):
     """Copies files from source to destination."""
-    os.makedirs(dest_dir, exist_ok=True)  # Ensure the target directory exists
+    #os.makedirs(dest_dir, exist_ok=True)  # Ensure the target directory exists
     # List of files to copy
     FILES_TO_COPY = ["BulkE_dict.txt", "MagMom_dict.txt", "PDOS_INCAR.txt","custom_incar_params.txt"]
     for file in FILES_TO_COPY:
@@ -26,7 +26,8 @@ def copy_files(source_dir, dest_dir):
 
 def make_wf_dir(source_dir):
     '''Makes directory with base files for workflow tools.'''
-    wf_dir = 'wf-user-files'
+    user_dir = os.path.expanduser('~/')
+    wf_dir = f'{user_dir}/wf-user-files'
     os.makedirs(wf_dir,exist_ok=True)
     
     #copy files

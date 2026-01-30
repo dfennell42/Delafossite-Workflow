@@ -1,6 +1,6 @@
 # Delafossite Modification Workflow CLI
 #### Author: Dorothea Fennell (dfennell1@bnl.gov, dfennell37@gmail.com)
-**Version**: 1.1.0
+**Version**: 1.2.0
 
 A command line interface tool designed to simplify running VASP calculations for delafossite materials. Given a base structure, the workflow can:
 - Modify composition
@@ -100,6 +100,20 @@ Removes atom pairs from structure, creating vacancy directories.
 
 ```console
 $ wf removepairs [OPTIONS]
+```
+
+**Options**:
+
+* `-h, --help`: Show this message and exit.
+
+### `wf addpairs`
+
+Adds atom pairs to structure. 
+
+**Usage**:
+
+```console
+$ wf addpairs [options]
 ```
 
 **Options**:

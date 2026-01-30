@@ -15,7 +15,9 @@ from .VASP_input import generate_vasp_inputs_in_dir
 from .modINCAR import update_incar_files_with_magmom
 #bash script run-removal
 from .remove_pairs import process_vasp_inputs
-from .removed_pairs_INCARmod import process_pairs_removed_dirs
+from .removed_pairs_INCARmod import process_pairs_mod_dirs
+#add pairs
+from .add_pairs import process_vasp_dirs
 #bash script process data
 from .get_e_pristine import get_all_e
 from .Calc_Evac import process_e_vac
@@ -59,7 +61,7 @@ def modify():
     load_dotenv()
     modify_structure(os.getcwd())
     process_poscar_files()
-    process_directories(os.getenv('POT_PATH'), vac = False)
+    process_directories(os.getenv('POT_PATH'), vac = False, add = False)
     generate_vasp_inputs_in_dir(os.getcwd())
     update_incar_files_with_magmom(os.getcwd(),comment_ldau=True)
 
@@ -68,8 +70,16 @@ def removepairs():
     '''Removes atom pairs from structures '''
     load_dotenv()
     element_name = process_vasp_inputs(os.getcwd())
-    process_pairs_removed_dirs(os.getcwd(),element_name)
-    process_directories(os.getenv('POT_PATH'), vac = True)
+    process_pairs_mod_dirs(os.getcwd(),element_name,'Removed')
+    process_directories(os.getenv('POT_PATH'), vac = True, add = False)
+
+@app.command()
+def addpairs():
+    '''Adds pairs of atoms to structures.'''
+    load_dotenv()
+    element_name = process_vasp_dirs(os.getcwd())
+    process_pairs_mod_dirs(os.getcwd(), element_name, 'Added')
+    process_directories(os.getenv('POT_PATH'), vac=False, add=True)
     
 @app.command()
 def gete():
@@ -107,6 +117,7 @@ def plot(
 def submit(
         calc: Annotated[str, typer.Argument(help='The type of calculation to submit. Options: struc: Pristine or vacancy surface calculations. pdos: PDOS calculations')] = 'struc',
         vac:Annotated[bool,typer.Option("--vac","-v",help='Run only vacancy calculations. Does not work with calc = pdos')] = False,
+        add: Annotated[bool,typer.Option("--add","-a",help='Run only adsorption calculations. Does not work with calc = pdos')] = False,
         ):
     '''Submits vasp calculations.'''
     pkgdir = sys.modules['delafossite_wf'].__path__[0]
@@ -116,6 +127,8 @@ def submit(
     if calc.lower() == 'struc':
         if vac:
             fpath = os.path.join(pkgdir,'submitvacancy-vasp.sh')
+        elif add:
+            fpath = os.path.join(pkgdir, 'submitadsorption-vasp.sh')
         else:
             fpath = os.path.join(pkgdir,'submitall-vasp.sh')
         os.system(f'bash {fpath}')

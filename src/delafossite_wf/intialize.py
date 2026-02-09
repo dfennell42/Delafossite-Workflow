@@ -14,7 +14,7 @@ def copy_files(source_dir, dest_dir):
     """Copies files from source to destination."""
     #os.makedirs(dest_dir, exist_ok=True)  # Ensure the target directory exists
     # List of files to copy
-    FILES_TO_COPY = ["BulkE_dict.txt", "MagMom_dict.txt", "PDOS_INCAR.txt","custom_incar_params.txt"]
+    FILES_TO_COPY = ["BulkE_dict.txt", "MagMom_dict.txt", "PDOS_INCAR.txt","custom_incar_params.txt","bands_incar_params.txt"]
     for file in FILES_TO_COPY:
         src_file = os.path.join(source_dir, file)
         dest_file = os.path.join(dest_dir, file)
@@ -48,12 +48,16 @@ def init_settings():
     print('\nAll base files (POSCAR, SpinPairs.txt, vasp.sh, etc.) should be added to directory "~/wf-user-files".\nAny edits to these files should be done in that directory.')
     print('\nExample files can be found in ~/wf-user-files/example_files')
     #submission script
-    print('\n\nPlease add your vasp submission script to directory ~/wf-user-files. Submission script MUST be titled "vasp.sh" or submit command will not work.')
+    print('\n\nPlease add your VASP submission script to directory ~/wf-user-files. Submission script MUST be titled "vasp.sh" or submit command will not work.')
     #incar params
-    print('\n\nIf you would like to customize INCAR parameters for geometry optimization, please edit custom_incar_params.txt')
-    print('\nIf you would like to customize INCAR parameters for PDOS calculations, please edit PDOS_INCAR.txt')
+    print('\n\nIf you would like to customize INCAR parameters for geometry optimization, please edit custom_incar_params.txt. Please note, if you want to run band structure calculations using hybrid functionals, you cannot use LWAVE = False.')
+    print('\nIf you would like to customize INCAR parameters for PDOS calculations, please edit PDOS_INCAR.txt.')
+    print('\nIf you would like to customize INCAR parameters for band structure calculations, please edit bands_incar_params.txt')
     print('Both files can be found in ~/wf-user-files')
     #make dir
     make_wf_dir(pkgdir)
+    #other comments
+    print('\n\nTo install tab completion, execute command "wf --install-completion".')
+    print('\n\nWorkflow set up complete.')
 
     

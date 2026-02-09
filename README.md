@@ -1,6 +1,6 @@
 # Delafossite Modification Workflow CLI
 #### Author: Dorothea Fennell (dfennell1@bnl.gov, dfennell37@gmail.com)
-**Version**: 1.2.0
+**Version**: 1.3.0
 
 A command line interface tool designed to simplify running VASP calculations for delafossite materials. Given a base structure, the workflow can:
 - Modify composition
@@ -39,6 +39,7 @@ If you prefer to install the workflow as an editable package, use option `--edit
 ## Workflow Commands (`wf`):
 
 **Usage**:
+
 ```console
 $ wf [OPTIONS] COMMAND [ARGS]...
 ```
@@ -48,25 +49,27 @@ $ wf [OPTIONS] COMMAND [ARGS]...
 * `-v, --version`
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
-* `-h, --help`: Show this message and exit.
+* `--help`: Show this message and exit.
 
 **Commands**:
 
-* `init`: Initializes workflow settings and sets up user directory ~/wf-user-files.
-* `modify`: Modifies delafossite structure based on Mods.txt file, creating Modification_# directories for structural optimization. 
-* `removepairs`: Removes atom pairs from structure, creating vacancy directories for structural optimization. 
-* `gete`: Gets pristine energy and calculates vacancy energy (in eV). Returns E_pristine.csv and E_vac.csv.
-* `pdos`: Sets up PDOS calculations using structural optimization CONTCAR and PDOS_INCAR.txt. 
-* `parse`: Parses PDOS data into individual files and integrates to find number of valence electrons, oxidation state, and net spin. Returns integrated-pdos.csv in each PDOS directory. 
+* `init`: Initializes workflow settings.
+* `modify`: Modifies delafossite structure based on...
+* `removepairs`: Removes atom pairs from structures
+* `addpairs`: Adds pairs of atoms to structures.
+* `gete`: Gets pristine E and E vac
+* `pdos`: sets up PDOS calculations
+* `parse`: Parses PDOS data into individual files and...
 * `integrate`: Integrates the PDOS files.
 * `plot`: Plots PDOS
+* `bands`: Sets up band structure calculations using...
 * `submit`: Submits vasp calculations.
 * `check`: Checks vasp.out for errors and fixes and...
 * `update`: Checks workflow version and updates if...
 
-### `wf init`
+## `wf init`
 
-Initializes workflow settings and sets up user directory ~/wf-user-files. 
+Initializes workflow settings.
 
 **Usage**:
 
@@ -76,11 +79,11 @@ $ wf init [OPTIONS]
 
 **Options**:
 
-* `-h, --help`: Show this message and exit.
+* `--help`: Show this message and exit.
 
-### `wf modify`
+## `wf modify`
 
-Modifies delafossite structure based on Mods.txt file, creating Modification_# directories. 
+Modifies delafossite structure based on user input. Needs Mods.txt
 
 **Usage**:
 
@@ -90,11 +93,11 @@ $ wf modify [OPTIONS]
 
 **Options**:
 
-* `-h, --help`: Show this message and exit.
+* `--help`: Show this message and exit.
 
-### `wf removepairs`
+## `wf removepairs`
 
-Removes atom pairs from structure, creating vacancy directories. 
+Removes atom pairs from structures
 
 **Usage**:
 
@@ -104,25 +107,25 @@ $ wf removepairs [OPTIONS]
 
 **Options**:
 
-* `-h, --help`: Show this message and exit.
+* `--help`: Show this message and exit.
 
-### `wf addpairs`
+## `wf addpairs`
 
-Adds atom pairs to structure. 
+Adds pairs of atoms to structures.
 
 **Usage**:
 
 ```console
-$ wf addpairs [options]
+$ wf addpairs [OPTIONS]
 ```
 
 **Options**:
 
-* `-h, --help`: Show this message and exit.
+* `--help`: Show this message and exit.
 
-### `wf gete`
+## `wf gete`
 
-Gets pristine energy and calculates vacancy energy (in eV). Returns E_pristine.csv and E_vac.csv. 
+Gets pristine E and E vac
 
 **Usage**:
 
@@ -132,11 +135,11 @@ $ wf gete [OPTIONS]
 
 **Options**:
 
-* `-h, --help`: Show this message and exit.
+* `--help`: Show this message and exit.
 
-### `wf pdos`
+## `wf pdos`
 
-Sets up PDOS calculations using PDOS_INCAR.txt in ~/wf-user-files
+sets up PDOS calculations
 
 **Usage**:
 
@@ -191,6 +194,21 @@ $ wf plot [OPTIONS]
 * `-n, --no-show-image`: Do not display plot in X11 window after running command.
 * `--help`: Show this message and exit.
 
+## `wf bands`
+
+Sets up band structure calculations using hybrid functionals. Note: Requires WAVECAR file from completed DFT structural optimization.
+
+**Usage**:
+
+```console
+$ wf bands [OPTIONS]
+```
+
+**Options**:
+
+* `-k, --kpoints TEXT`: The number of K points to use per line in KPOINTS_OPT file. Default is 10.  [default: 10]
+* `--help`: Show this message and exit.
+
 ## `wf submit`
 
 Submits vasp calculations.
@@ -203,11 +221,12 @@ $ wf submit [OPTIONS] [CALC]
 
 **Arguments**:
 
-* `[CALC]`: The type of calculation to submit. Options: struc: Pristine or vacancy surface calculations. pdos: PDOS calculations  [default: struc]
+* `[CALC]`: The type of calculation to submit. Options: struc: Pristine or vacancy surface calculations. pdos: PDOS calculations. bands: Band structure calculations.  [default: struc]
 
 **Options**:
 
 * `-v, --vac`: Run only vacancy calculations. Does not work with calc = pdos
+* `-a, --add`: Run only adsorption calculations. Does not work with calc = pdos
 * `--help`: Show this message and exit.
 
 ## `wf check`
@@ -222,7 +241,7 @@ $ wf check [OPTIONS]
 
 **Options**:
 
-* `-n, --no-submit`: Use -n or --no-submit to run check without autosubmitting calculations
+* `-n, --no-submit`: Use -n or --no-submit to run check without autosubmitting calculations  [default: True]
 * `--help`: Show this message and exit.
 
 ## `wf update`
@@ -236,5 +255,6 @@ $ wf update [OPTIONS]
 ```
 
 **Options**:
-* `-e, --editable`: Install the workflow as an editable package. 
+
+* `-e, --editable`: Install the workflow as an editable package.
 * `--help`: Show this message and exit.

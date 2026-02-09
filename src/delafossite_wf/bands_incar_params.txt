@@ -1,0 +1,4 @@
+LHFCALC = True
+GGA = PE
+HFRCUT = -1
+ALGO = Damped

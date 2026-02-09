@@ -36,7 +36,8 @@ from .intialize import init_settings
 from .err_check import err_fix
 #update
 from .wf_update import check_vrsn
-
+#band structures
+from .bands_input import create_all_bands
 #create app
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
@@ -112,10 +113,16 @@ def plot(
     ):
     '''Plots PDOS'''
     plot_pdos(os.getcwd(),show)
-    
+
+@app.command()
+def bands(k: Annotated[str, typer.Option('--kpoints', '-k', help = 'The number of K points to use per line in KPOINTS_OPT file. Default is 10.')] = '10',
+        ):
+    '''Sets up band structure calculations using hybrid functionals. Note: Requires WAVECAR file from completed DFT structural optimization.'''
+    create_all_bands(os.getcwd(),k)
+
 @app.command()
 def submit(
-        calc: Annotated[str, typer.Argument(help='The type of calculation to submit. Options: struc: Pristine or vacancy surface calculations. pdos: PDOS calculations')] = 'struc',
+        calc: Annotated[str, typer.Argument(help='The type of calculation to submit. Options: struc: Pristine or vacancy surface calculations. pdos: PDOS calculations. bands: Band structure calculations.')] = 'struc',
         vac:Annotated[bool,typer.Option("--vac","-v",help='Run only vacancy calculations. Does not work with calc = pdos')] = False,
         add: Annotated[bool,typer.Option("--add","-a",help='Run only adsorption calculations. Does not work with calc = pdos')] = False,
         ):
@@ -124,17 +131,19 @@ def submit(
     filedir = os.path.expanduser('~/wf-user-files')
     fullpath = os.path.join(filedir, 'vasp.sh')
     shutil.copy(fullpath, os.getcwd())
+    fpath = os.path.join(pkgdir,'submitall-vasp.sh')
     if calc.lower() == 'struc':
         if vac:
-            fpath = os.path.join(pkgdir,'submitvacancy-vasp.sh')
+            calc_type = "*_Removed"
         elif add:
-            fpath = os.path.join(pkgdir, 'submitadsorption-vasp.sh')
+            calc_type = "*_Added"
         else:
-            fpath = os.path.join(pkgdir,'submitall-vasp.sh')
-        os.system(f'bash {fpath}')
+            calc_type = "all"
     elif calc.lower() == 'pdos':
-        fpath = os.path.join(pkgdir,'submitpdos-vasp.sh')
-        os.system(f'bash {fpath}')
+        calc_type = "PDOS"
+    elif calc.lower() == 'bands':
+        calc_type = "Band_struc"
+    os.system(f'bash {fpath} {calc_type}')
         
 @app.command()
 def check(

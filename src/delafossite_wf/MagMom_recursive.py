@@ -1,5 +1,4 @@
 import os
-import sys
 import shutil
 # Define element-specific magnetic moments
 
@@ -32,8 +31,8 @@ def assign_magnetic_moments(atom_to_element, spin_pairs):
     """
     Assign magnetic moments to atoms based on spin pairs and element type.
     """
-    pkgdir = sys.modules['delafossite_wf'].__path__[0]
-    with open(os.path.join(pkgdir,'MagMom_dict.txt'),'r') as mm:
+    userdir = os.path.expanduser('~/wf-user-files')
+    with open(os.path.join(userdir,'MagMom_dict.txt'),'r') as mm:
         mm_lines = mm.readlines()
         
     magnetic_moments = {}

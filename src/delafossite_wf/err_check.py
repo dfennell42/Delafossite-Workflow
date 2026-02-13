@@ -62,8 +62,8 @@ def continue_calc(file):
     if os.path.exists(f'{dirname}/CONTCAR'):
         with open(f'{dirname}/CONTCAR','r') as c:
             clines = c.readlines()
-            if clines == True:
-                shutil.copy(os.path.join(dirname,'CONTCAR'),os.path.join(dirname,'POSCAR'))
+            if len(clines) > 0:
+                 shutil.copy(os.path.join(dirname,'CONTCAR'),os.path.join(dirname,'POSCAR'))
             else:
                 print(f'CONTCAR in {dirname} empty. Skipping copying...')
     else:

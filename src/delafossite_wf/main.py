@@ -36,8 +36,9 @@ from .intialize import init_settings
 from .err_check import err_fix
 #update
 from .wf_update import check_vrsn
-#band structures
+#band structures & bandgap
 from .bands_input import create_all_bands
+from .get_bandgap import get_band_data
 #create app
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
@@ -119,6 +120,11 @@ def bands(k: Annotated[str, typer.Option('--kpoints', '-k', help = 'The number o
         ):
     '''Sets up band structure calculations using hybrid functionals. Note: Requires WAVECAR file from completed DFT structural optimization.'''
     create_all_bands(os.getcwd(),k)
+
+@app.command()
+def getgap():
+    '''Gets band gap, Fermi energy, VBM, and CBM for each modification directory and outputs data into a CSV file.'''
+    get_band_data(os.getcwd())
 
 @app.command()
 def submit(

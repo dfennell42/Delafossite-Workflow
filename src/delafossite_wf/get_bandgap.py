@@ -30,7 +30,7 @@ def get_BG(vasprun, mod):
     bg_ser = pd.Series({'Modification':mod,'Band gap':band_gap['energy'],'E_fermi':fermi,'VBM':vbm,'CBM':cbm})
     return bg_ser
 
-def get_all_data(base_dir):
+def get_band_data(base_dir):
     '''Gets band gap data for all modification directories.'''
     band_dirs=[]
     for root, dirs, files in os.walk(base_dir):
@@ -63,7 +63,7 @@ def get_all_data(base_dir):
                 bg = get_BG(vpr, mod)
                 bg_data.append(bg)
     
-    #create df
+    #create df 
     bg_df = pd.DataFrame(bg_data)
     bg_df.set_index('Modification',inplace=True)
     #export df to csv

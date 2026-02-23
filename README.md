@@ -1,6 +1,6 @@
 # Delafossite Modification Workflow CLI
 #### Author: Dorothea Fennell (dfennell1@bnl.gov, dfennell37@gmail.com)
-**Version**: 1.3.0
+**Version**: 1.3.1
 
 A command line interface tool designed to simplify running VASP calculations for delafossite materials. Given a base structure, the workflow can:
 - Modify composition
@@ -63,6 +63,7 @@ $ wf [OPTIONS] COMMAND [ARGS]...
 * `integrate`: Integrates the PDOS files.
 * `plot`: Plots PDOS
 * `bands`: Sets up band structure calculations using...
+* `getgap`: Gets band gap, Fermi energy, VBM, and...
 * `submit`: Submits vasp calculations.
 * `check`: Checks vasp.out for errors and fixes and...
 * `update`: Checks workflow version and updates if...
@@ -207,6 +208,20 @@ $ wf bands [OPTIONS]
 **Options**:
 
 * `-k, --kpoints TEXT`: The number of K points to use per line in KPOINTS_OPT file. Default is 10.  [default: 10]
+* `--help`: Show this message and exit.
+
+## `wf getgap`
+
+Gets band gap, Fermi energy, VBM, and CBM for each modification directory and outputs data into a CSV file.
+
+**Usage**:
+
+```console
+$ wf getgap [OPTIONS]
+```
+
+**Options**:
+
 * `--help`: Show this message and exit.
 
 ## `wf submit`

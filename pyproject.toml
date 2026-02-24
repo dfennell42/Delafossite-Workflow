@@ -1,13 +1,13 @@
 [project]
 name = "delafossite-wf"
-version = "1.3.1"
+version = "1.3.2"
 description = "A command line interface tool for modifying delafossite structures for VASP calculations via workflow"
 authors = [
     {name = "Dorothea Fennell",email = "dfennell1@bnl.gov"}
 ]
 license = {text = "MIT"}
 readme = "README.md"
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.11,<3.15"
 dependencies = [
     "typer (>=0.16.0,<0.17.0)",
     "ase (>=3.25.0,<4.0.0)",

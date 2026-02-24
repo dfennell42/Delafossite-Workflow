@@ -1,6 +1,6 @@
 # Delafossite Modification Workflow CLI
 #### Author: Dorothea Fennell (dfennell1@bnl.gov, dfennell37@gmail.com)
-**Version**: 1.3.1
+**Version**: 1.3.3
 
 A command line interface tool designed to simplify running VASP calculations for delafossite materials. Given a base structure, the workflow can:
 - Modify composition

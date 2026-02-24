@@ -77,12 +77,14 @@ def get_filelist(pdos_dir,indices, suffix):
             print('File not found.')
     return filelist
     
-def save_plot(fig, filename, base_dir,w=500, h=600, s=1.25, show_image=True):
+def save_plot(fig, filename, base_dir,w=500, h=600, s=1.25, no_show_image=False):
     full_fname = f'{base_dir}/{filename}'
     fig.write_image(full_fname, width=w, height=h, scale=s)
-    if show_image == True:
+    if no_show_image == False:
         plot = Image.open(full_fname)
         ImageShow.show(plot)
+    elif no_show_image == True:
+        print(f'{filename} saved.')
 
 def option1(f,fig,plot_choice, r=1, c =1):
     #this one needs to be unpacked because it's saved by numpy.savetxt rather than .write()
@@ -148,7 +150,7 @@ def check_input(user_input):
         print('Exiting...')
         sys.exit()
 
-def plot_pdos(base_dir, show_img=True):
+def plot_pdos(base_dir, no_show_img):
     print('\n If you would like to exit, type "exit" into any input prompt.')
     print('\nWould you like this to run recursively?')
     print('\nEntire either "y" for all directories, or input the number(s) of the directories (comma-separated).')
@@ -246,7 +248,7 @@ def plot_pdos(base_dir, show_img=True):
             fig.update_xaxes(range=None,showticklabels=True,ticks='outside')
             fig.update_yaxes(range=None)
             #save image
-            save_plot(fig,'TotalDos.png',pdos_dir)
+            save_plot(fig,'TotalDos.png',pdos_dir,no_show_image=no_show_img)
         else:
             #creating list of files
             filelist = get_filelist(pdos_dir,indices, suffix)
@@ -260,7 +262,7 @@ def plot_pdos(base_dir, show_img=True):
                     elif option == '2':
                         fig, name = option2(f,fig,fermi,plot_choice)
                         fname = f'{name[0]}_indiv.png'
-                    save_plot(fig,fname,pdos_dir) 
+                    save_plot(fig,fname,pdos_dir,no_show_image=no_show_img) 
             #for one large plot
             elif plot_choice == "2":
                 #empty list for subplot titles
@@ -312,4 +314,4 @@ def plot_pdos(base_dir, show_img=True):
                 title_input=input(f"{pdos_dir}:What would you like to title this plot?")
                 check_input(title_input)
                 fig.update_layout(title_text = f'{title_input}')
-                save_plot(fig,filename,pdos_dir,w=(cw*150),h=(rw*400),show_image=show_img)
+                save_plot(fig,filename,pdos_dir,w=(cw*150),h=(rw*400),show_image=no_show_img)

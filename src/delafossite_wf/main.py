@@ -110,10 +110,10 @@ def integrate():
     
 @app.command()
 def plot(
-        show:Annotated[bool,typer.Option('--no-show-image','-n',help='Do not display plot in X11 window after running command.',show_default=False)] = True,
+        no_show:Annotated[bool,typer.Option('--no-show-image','-n',help='Do not display plot in X11 window after running command.',show_default=False)] ,
     ):
     '''Plots PDOS'''
-    plot_pdos(os.getcwd(),show)
+    plot_pdos(os.getcwd(),no_show)
 
 @app.command()
 def bands(k: Annotated[str, typer.Option('--kpoints', '-k', help = 'The number of K points to use per line in KPOINTS_OPT file. Default is 10.')] = '10',
@@ -153,10 +153,10 @@ def submit(
         
 @app.command()
 def check(
-        submit:Annotated[bool,typer.Option("--no-submit","-n",help='Use -n or --no-submit to run check without autosubmitting calculations')] = False
+        no_submit:Annotated[bool,typer.Option("--no-submit","-n",help='Use -n or --no-submit to run check without autosubmitting calculations')] = False
         ):
     '''Checks vasp.out for errors and fixes and resubmits calculations if possible.'''
-    err_fix(os.getcwd(),submit)
+    err_fix(os.getcwd(),no_submit)
 
 @app.command()
 def update(

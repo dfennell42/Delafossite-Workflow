@@ -92,7 +92,7 @@ def submit_calcs(file):
     sp.run(['sbatch','vasp.sh'], check=True)
     os.chdir(wd)
     
-def err_fix(base_dir,submit=True):
+def err_fix(base_dir,no_submit=False):
     """ Fixes errors if possible or prints error if not."""
     #gets error files
     output_files = find_files(base_dir)
@@ -139,9 +139,9 @@ def err_fix(base_dir,submit=True):
                     print(f'Error: Slurm output file in {dirname} shows calculation exited with error code. Check output file for more info.')
             else:
                 print(f'Error: {err} for calculation in {dirname}. Must be fixed by hand.')
-        if submit == True:
+        if no_submit == False:
             submit_calcs(file)
-    if submit != True:
+    if no_submit != False:
         print('Errors fixed if possible, but calculations not submitted.')
 #run in terminal
 #if __name__ == "__main__":

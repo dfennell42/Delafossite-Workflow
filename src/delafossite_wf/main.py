@@ -153,7 +153,7 @@ def submit(
         
 @app.command()
 def check(
-        submit:Annotated[bool,typer.Option("--no-submit","-n",help='Use -n or --no-submit to run check without autosubmitting calculations')] = True
+        submit:Annotated[bool,typer.Option("--no-submit","-n",help='Use -n or --no-submit to run check without autosubmitting calculations')] = False
         ):
     '''Checks vasp.out for errors and fixes and resubmits calculations if possible.'''
     err_fix(os.getcwd(),submit)

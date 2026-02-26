@@ -21,7 +21,7 @@ def read_spin_pairs(filename):
     spin_pairs = {}
     with open(filename, 'r') as f:
         for line in f:
-            if not line.strip.startswith('#') and len(line) >1:
+            if not line.strip().startswith('#') and len(line) >1:
                 parts = line.strip().split(',')
                 atom1, atom2 = int(parts[0]), int(parts[1])
                 spin = parts[2].strip()

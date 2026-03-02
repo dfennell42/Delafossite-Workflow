@@ -47,7 +47,7 @@ def copy_vasp_files(source_dir, dest_dir):
     """Copies essential VASP input files from source to destination."""
     os.makedirs(dest_dir, exist_ok=True)  # Ensure the target directory exists
     #list of files to copy
-    FILES_TO_COPY = ["INCAR", "KPOINTS", "POTCAR", "CONTCAR","WAVECAR"]
+    FILES_TO_COPY = ["KPOINTS", "POTCAR", "CONTCAR","WAVECAR"]
     for file in FILES_TO_COPY:
         src_file = os.path.join(source_dir, file)
         dest_file = os.path.join(dest_dir, file)
@@ -69,6 +69,15 @@ def create_bands(input_dir,base_dir,band_params,k):
     #Rename CONTCAR to POSCAR
     if os.path.exists(f'{input_dir}/PDOS/CONTCAR'):
         os.rename(f'{input_dir}/PDOS/CONTCAR',f'{input_dir}/PDOS/POSCAR')
+    
+    #Check for ISYM
+    with open(f'{input_dir}/INCAR','r') as f:
+        incar_lines = f.readlines()
+    
+    for line in incar_lines:
+        if line.strip().startswith('ISYM'):
+            key, value = line.strip().split('=', 1)
+            band_params[key.strip()] = value.strip()
     
     #Generate input files
     gen_inputs(output_dir, band_params, k)

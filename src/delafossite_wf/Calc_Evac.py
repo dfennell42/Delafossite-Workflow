@@ -10,13 +10,13 @@ Changelog:
             e-vac from pristine structure and from previous structure
     5-30-25: Modified get_pair_numbers in case of 0 Li or O. 
     7-23-25: Modified for generalized version. 
-    8-13-25:
+    3-2-26: Modified to add option to ignore symmetry and give vacancy energy per atom regardless of symmetry. 
 """
 #import modules
 import os
 import sys
 from ase.io import read
-from ase.formula import Formula
+
 #define functions
 def get_dirs(mod_dir):
     '''Runs through all directories in base directory and returns list of vacancy directories.'''
@@ -39,13 +39,11 @@ def get_pair_numbers(vac_dir):
     pris_dir = os.path.dirname(vac_dir)
     #pristine
     pris_atoms = read(os.path.join(pris_dir,'POSCAR'))
-    psym = pris_atoms.get_chemical_formula()
-    pf = Formula(psym)
+    pf = pris_atoms.symbols.formula
     p_counts = pf.count()
     #vacancy
     vac_atoms = read(os.path.join(vac_dir,'POSCAR'))
-    vsym = vac_atoms.get_chemical_formula()
-    vf = Formula(vsym)
+    vf = vac_atoms.symbols.formula
     v_counts = vf.count()
     #determine pairs removed
     ele_vacs = {}
@@ -87,7 +85,7 @@ def get_ep(base_dir,mod_dir):
         print('Exiting...')
         sys.exit()
         
-def get_all_e(mod_dir,mods,base_dir):
+def get_all_e(mod_dir,mods,base_dir,ignore_sym=False):
     '''Gets total energy of pristine and vacancy surfaces.Returns list of vacancy energies.'''
     #get total energy of pristine surface
     p = os.path.join(mod_dir,'VASP_inputs/')
@@ -109,7 +107,7 @@ def get_all_e(mod_dir,mods,base_dir):
     for vac_dir in vac_dirs:
         vac = get_e(vac_dir)
         ele_vacs = get_pair_numbers(vac_dir)
-        e_vac = calc_e_vac(e_p,vac,vac_dir,ele_vacs)
+        e_vac = calc_e_vac(e_p,vac,vac_dir,ele_vacs,ignore_sym)
         pair = os.path.basename(vac_dir).split('_')[1]
         element = os.path.basename(vac_dir).split('_')[0]
         dirname = os.path.dirname(vac_dir)
@@ -123,7 +121,9 @@ def get_all_e(mod_dir,mods,base_dir):
             prev_pair = os.path.basename(dirname).split('_')[1]
             #get evac relative to previous structure 
             prev = get_e(dirname)
-            ev_from_prev = calc_e_vac(prev, vac, vac_dir,ele_vacs)
+            if prev == None:
+                prev = get_ep(base_dir,mod_dir)
+            ev_from_prev = calc_e_vac(prev, vac, vac_dir,ele_vacs,ignore_sym)
             for i, mod in enumerate(mods,1):
                 if f'Modification_{i}' == f'{mod_name}':
                     mod = mod.strip('-')
@@ -142,11 +142,13 @@ def calc_e_vac(e_p,vac,vac_dir,ele_vacs):
                 num = float(ele_vacs.get(ele))
                 bulk = float(i.split(':')[1])
                 vac_e = num * bulk
-                vacancies.append(vac_e)
+                vacancies.append((vac_e,num))
     tot_vac = 0
-    for v in vacancies:
+    tot_num = 0
+    for (v,n) in vacancies:
         tot_vac += v
-    ev = (vac+tot_vac - e_p)/2
+        tot_num += n
+    ev = (vac+tot_vac - e_p)/tot_num
     return ev
 
 def process_e_vac(base_dir):
@@ -160,6 +162,23 @@ def process_e_vac(base_dir):
         print('No modification directories found.')
         return
     
+    #check ISYM
+    with open(f'{mod_dirs[0]}/VASP/INCAR','r') as f:
+        lines = f.readlines()
+    
+    for l in lines:
+        if l.strip().startswith('ISYM'):
+            ignore_sym = True
+    
+    #set ignore_sym = False if it doesn't exist
+    if 'ignore_sym' not in locals():
+        ignore_sym = False
+    
+    #mods file name
+    if ignore_sym == True:
+        mod_file = 'ModsIdx.txt'
+    else:
+        mod_file = 'Mods.txt'
     #get modifications from ModsCo.txt
     mods = read_file(base_dir, 'Mods.txt')
     #convert the commas to dashes so the csv won't separate incorrectly

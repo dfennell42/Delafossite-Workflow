@@ -13,11 +13,17 @@ from .MagMom_recursive import process_poscar_files
 from .POTCAR_cat import process_directories
 from .VASP_input import generate_vasp_inputs_in_dir
 from .modINCAR import update_incar_files_with_magmom
+#modify ignoring symmetry
+from .modify_ignore_sym import modify_without_sym
 #bash script run-removal
 from .remove_pairs import process_vasp_inputs
 from .removed_pairs_INCARmod import process_pairs_mod_dirs
+#remove single atoms
+from .remove_atoms import process_vasp_inputs_nosym
 #add pairs
 from .add_pairs import process_vasp_dirs
+#add single atoms
+from .add_atoms import process_vasp_dirs_nosym
 #bash script process data
 from .get_e_pristine import get_all_e
 from .Calc_Evac import process_e_vac
@@ -58,21 +64,26 @@ def init():
     init_settings()
 
 @app.command()
-def modify():
-    '''Modifies delafossite structure based on user input. Needs Mods.txt '''
+def modify(
+        no_sym: Annotated[bool, typer.Option("--ignore-symmetry",'-i',help='Ignores symmetry, modifying individual atoms rather than pairs. If using this option, need ModsIdx.txt.')] = False
+        ):
+    '''Modifies delafossite structure based on user input. Needs Mods.txt or ModsIdx.txt if using --ignore-symmetry/-i. '''
     load_dotenv()
-    modify_structure(os.getcwd())
-    process_poscar_files()
+    if no_sym == False:
+        modify_structure(os.getcwd())
+    elif no_sym == True:
+        modify_without_sym(os.getcwd())
+    process_poscar_files(mod=None, ignore_sym=no_sym)
     process_directories(os.getenv('POT_PATH'), vac = False, add = False)
     generate_vasp_inputs_in_dir(os.getcwd())
-    update_incar_files_with_magmom(os.getcwd(),comment_ldau=True)
+    update_incar_files_with_magmom(os.getcwd(),ignore_sym=no_sym)
 
 @app.command()
 def removepairs():
     '''Removes atom pairs from structures '''
     load_dotenv()
     element_name = process_vasp_inputs(os.getcwd())
-    process_pairs_mod_dirs(os.getcwd(),element_name,'Removed')
+    process_pairs_mod_dirs(os.getcwd(),element_name,'Removed',ignore_sym=False)
     process_directories(os.getenv('POT_PATH'), vac = True, add = False)
 
 @app.command()
@@ -80,7 +91,23 @@ def addpairs():
     '''Adds pairs of atoms to structures.'''
     load_dotenv()
     element_name = process_vasp_dirs(os.getcwd())
-    process_pairs_mod_dirs(os.getcwd(), element_name, 'Added')
+    process_pairs_mod_dirs(os.getcwd(), element_name, 'Added', ignore_sym=False)
+    process_directories(os.getenv('POT_PATH'), vac=False, add=True)
+
+@app.command()
+def removeatoms():
+    '''Removes SINGLE atoms, ignoring symmetry. NOTE: Ignoring symmetry greatly increases calculation time.'''
+    load_dotenv()
+    element_name = process_vasp_inputs_nosym(os.getcwd())
+    process_pairs_mod_dirs(os.getcwd(), element_name, 'Removed',ignore_sym= True)
+    process_directories(os.getenv('POT_PATH'), vac = True, add = False)
+
+@app.command()
+def addatoms():
+    '''Adds SINGLE atoms to structures, ignoring symmetry. NOTE: Ignoring symmetry greatly increases calculation time.'''
+    load_dotenv()
+    element_name = process_vasp_dirs_nosym(os.getcwd())
+    process_pairs_mod_dirs(os.getcwd(), element_name, 'Added',ignore_sym=True)
     process_directories(os.getenv('POT_PATH'), vac=False, add=True)
     
 @app.command()

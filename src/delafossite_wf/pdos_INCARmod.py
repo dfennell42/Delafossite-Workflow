@@ -3,6 +3,7 @@ Modify INCAR for PDOS calculations
 Author: Dorothea Fennell
 Changelog: 
     4-23-25: Created, comments added 
+    3-2-26: Modified to check for ISYM
 """
 #import modules
 import os
@@ -30,6 +31,10 @@ def modify_incar(incar_path, pdos_incar_file):
         if line.strip().startswith("MAGMOM"):
             magmom_line = line.strip()
    
+    #checks if INCAR contains ISYM 
+    for line in incar_lines:
+        if line.strip().startswith('ISYM'):
+            pdos_lines.append(f'\n{line}')
 
     #adds the magmom line to pdos_lines
     pdos_lines.append(f"\n{magmom_line}")

@@ -1,6 +1,6 @@
 # Delafossite Modification Workflow CLI
 #### Author: Dorothea Fennell (dfennell1@bnl.gov, dfennell37@gmail.com)
-**Version**: 1.3.4
+**Version**: 1.4.0
 
 A command line interface tool designed to simplify running VASP calculations for delafossite materials. Given a base structure, the workflow can:
 - Modify composition
@@ -41,7 +41,7 @@ If you prefer to install the workflow as an editable package, use option `--edit
 
 ## Workflow Commands (`wf`):
 
-**Usage**:
+*Usage**:
 
 ```console
 $ wf [OPTIONS] COMMAND [ARGS]...
@@ -60,13 +60,15 @@ $ wf [OPTIONS] COMMAND [ARGS]...
 * `modify`: Modifies delafossite structure based on...
 * `removepairs`: Removes atom pairs from structures
 * `addpairs`: Adds pairs of atoms to structures.
+* `removeatoms`: Removes SINGLE atoms, ignoring symmetry.
+* `addatoms`: Adds SINGLE atoms to structures, ignoring...
 * `gete`: Gets pristine E and E vac
 * `pdos`: sets up PDOS calculations
 * `parse`: Parses PDOS data into individual files and...
 * `integrate`: Integrates the PDOS files.
 * `plot`: Plots PDOS
 * `bands`: Sets up band structure calculations using...
-* `getgap`: Gets band gap, Fermi energy, VBM, and...
+* `getgap`: Gets band gap, Fermi energy, VBM, and CBM...
 * `submit`: Submits vasp calculations.
 * `check`: Checks vasp.out for errors and fixes and...
 * `update`: Checks workflow version and updates if...
@@ -87,7 +89,7 @@ $ wf init [OPTIONS]
 
 ## `wf modify`
 
-Modifies delafossite structure based on user input. Needs Mods.txt
+Modifies delafossite structure based on user input. Needs Mods.txt or ModsIdx.txt if using --ignore-symmetry/-i.
 
 **Usage**:
 
@@ -97,6 +99,7 @@ $ wf modify [OPTIONS]
 
 **Options**:
 
+* `-i, --ignore-symmetry`: Ignores symmetry, modifying individual atoms rather than pairs. If using this option, need ModsIdx.txt.
 * `--help`: Show this message and exit.
 
 ## `wf removepairs`
@@ -121,6 +124,34 @@ Adds pairs of atoms to structures.
 
 ```console
 $ wf addpairs [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `wf removeatoms`
+
+Removes SINGLE atoms, ignoring symmetry. NOTE: Ignoring symmetry greatly increases calculation time.
+
+**Usage**:
+
+```console
+$ wf removeatoms [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `wf addatoms`
+
+Adds SINGLE atoms to structures, ignoring symmetry. NOTE: Ignoring symmetry greatly increases calculation time.
+
+**Usage**:
+
+```console
+$ wf addatoms [OPTIONS]
 ```
 
 **Options**:
@@ -195,7 +226,7 @@ $ wf plot [OPTIONS]
 
 **Options**:
 
-* `-n, --no-show-image`: Do not display plot in X11 window after running command.
+* `-n, --no-show-image`: Do not display plot in X11 window after running command.  [required]
 * `--help`: Show this message and exit.
 
 ## `wf bands`
@@ -259,7 +290,7 @@ $ wf check [OPTIONS]
 
 **Options**:
 
-* `-n, --no-submit`: Use -n or --no-submit to run check without autosubmitting calculations  [default: True]
+* `-n, --no-submit`: Use -n or --no-submit to run check without autosubmitting calculations
 * `--help`: Show this message and exit.
 
 ## `wf update`

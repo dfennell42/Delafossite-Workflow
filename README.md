@@ -1,6 +1,6 @@
 # Delafossite Modification Workflow CLI
 #### Author: Dorothea Fennell (dfennell1@bnl.gov, dfennell37@gmail.com)
-**Version**: 1.4.0
+**Version**: 1.4.1
 
 A command line interface tool designed to simplify running VASP calculations for delafossite materials. Given a base structure, the workflow can:
 - Modify composition
@@ -62,7 +62,7 @@ $ wf [OPTIONS] COMMAND [ARGS]...
 * `addpairs`: Adds pairs of atoms to structures.
 * `removeatoms`: Removes SINGLE atoms, ignoring symmetry.
 * `addatoms`: Adds SINGLE atoms to structures, ignoring...
-* `gete`: Gets pristine E and E vac
+* `gete`: Gets pristine E, E_vac, and E_ads.
 * `pdos`: sets up PDOS calculations
 * `parse`: Parses PDOS data into individual files and...
 * `integrate`: Integrates the PDOS files.
@@ -160,7 +160,7 @@ $ wf addatoms [OPTIONS]
 
 ## `wf gete`
 
-Gets pristine E and E vac
+Gets pristine E, E_vac, and E_ads.
 
 **Usage**:
 

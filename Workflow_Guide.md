@@ -70,8 +70,8 @@ The workflow will also fix certain errors. For cancelation, timeout, 'ZBRENT', o
 
 If no errors are found, the workflow will return "No errors found. All calculations complete.”
 
-### Calculating Vacancy Energies:
-Following structural optimization, the user can execute command `wf gete`. This command extracts the ground-state energies from the output files and produces two CSV files: "E_pris.csv" and "E_vac.csv". The first contains the modification directory, the modification (as read from the Mods file), and the ground-state energies (eV) of the pristine structures. The second contains the modification directory, the modification, which species was removed, the number of atoms removed, the ground-state energy, and the vacancy energy (eV) of all vacancy structures. If the vacancy in question is a secondary vacancy (i.e. an oxygen vacancy following a lithium vacancy) the workflow calculates the vacancy energy from the previous vacancy structure rather than the pristine surface. 
+### Calculating Vacancy or Adsorption Energies:
+Following structural optimization, the user can execute command `wf gete`. This command extracts the ground-state energies from the output files and produces up to three CSV files: "E_pris.csv", "E_vac.csv", and "E_ads.csv". The first contains the modification directory, the modification (as read from the Mods file), and the ground-state energies (eV) of the pristine structures. The second and third contain the modification directory, the modification, which species was removed, the number of atoms removed, the ground-state energy, and the vacancy/adsorption energy (eV) of all vacancy or adsorption structures. If the vacancy or adsorption in question is a secondary change (i.e. an oxygen vacancy following a lithium vacancy) the workflow calculates the energy from the previous vacancy or adsorption structure rather than the pristine surface. 
 
 The vacancy energy is calculated as follows:
 
@@ -79,7 +79,13 @@ $$E_{vac}=(E_{vs}+N_a*E_a)-E_{pris}$$
 
 Where E<sub>vac</sub> is the vacancy energy, E<sub>vs</sub> is the ground-state energy of the vacancy structure, N<sub>a</sub> is the number of atoms removed, E<sub>a</sub> is the ground-state energy of a single atom in the bulk of the removed species, and E<sub>pris</sub> is the ground-state energy of the pristine structure. All energies are given in eV. 
 
-***Important Note:*** *While atoms are removed in pairs due to the cell's inversion symmetry, all vacancy energies are reported **<ins>per atom.</ins>**, regardless of symmetry.*
+Similarly, the adsorption energy is calculated as follows:
+
+$$E_{ads}=(E_{as}-N_a*E_a)-E_{pris}$$
+
+E<sub>ads</sub> is the adsorption energy, E<sub>as</sub> is the ground-state energy of the adsorption structure, N<sub>a</sub> is the number of atoms added, E<sub>a</sub> is the ground-state energy of a single atom in the bulk of the added species, and E<sub>pris</sub> is the ground-state energy of the pristine structure. All energies are given in eV.
+
+***Important Note:*** *While atoms are removed in pairs due to the cell's inversion symmetry, all energies are reported **<ins>per atom.</ins>**, regardless of symmetry.*
 
 ### PDOS Calculations:
 Once the structural optimizatons are complete, the user can then set up PDOS calculations by executing command `wf pdos`. The workflow will prompt the user on whether to set PDOS up for the pristine or vacancy structures. Following the user's choice, the workflow will create a new subdirectory in the appropriate location, titled `./PDOS`. It will then copy the appropriate input files to the directory, using the CONTCAR from the optimization calculations as POSCAR, and modify INCAR based on "PDOS_INCAR.txt". 

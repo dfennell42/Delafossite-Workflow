@@ -5,6 +5,8 @@ Fix CONTCAR issue with broken symmetry.
 Author: Dorothea Fennell
 Changelog:
     2-27-26: Created, comments added
+    3-9-26: Added check to make sure file says "Direct"
+    3-30-26: Fixed issue where it would add "direct" to file twice.
 """
 #define functions
 def get_lines(mod_dir,file):
@@ -16,7 +18,7 @@ def get_lines(mod_dir,file):
 def fix_contcar(clines,plines):
     '''Replaces bad CONTCAR lines with lines from POSCAR'''
     new_lines=[]
-    bad_idx = [5,6,7,8]
+    bad_idx = [5,6,7,8,9]
     for i,line in enumerate(clines):
         if i not in bad_idx:
             new_lines.append(line)
@@ -26,6 +28,12 @@ def fix_contcar(clines,plines):
             new_lines.append(plines[6])
         elif i == 6 or i == 8:
             pass
+        elif i == 9:
+            if clines[9].strip().isalpha():
+                pass
+            else:
+                new_lines.append('Direct\n')
+                new_lines.append(clines[9])
     return new_lines
 
 def check_contcar(mod_dir):
@@ -35,7 +43,8 @@ def check_contcar(mod_dir):
     plines = get_lines(mod_dir,'POSCAR')
     
     #check CONTCAR
-    if clines[6].isnumeric():
+    line = clines[6].strip().split()
+    if line[0].isnumeric():
         return
     else:
         new_lines = fix_contcar(clines, plines)

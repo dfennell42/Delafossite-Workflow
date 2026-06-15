@@ -46,6 +46,10 @@ from .wf_update import check_vrsn
 #band structures & bandgap
 from .bands_input import create_all_bands
 from .get_bandgap import get_band_data
+#chg diff
+from .chg_diff import get_chgdiff
+#generate structures
+from .bulk_to_sc import create_structure
 #create app
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
@@ -64,6 +68,20 @@ def init():
     '''Initializes workflow settings.'''
     init_settings()
 
+@app.command(short_help='Generates surface structure based on bulk structure and user input.')
+def generate(
+        bulk: Annotated[str | None, typer.Option('--bulk','-b', help='Path to bulk file or Material Project ID.',show_default=False)] = None,
+        sc_size: Annotated[str | None, typer.Option('--sc-size','-s', help='Supercell size given as set of vectors or list of scaling factors.',show_default=False)] = None,
+        miller: Annotated[str | None, typer.Option('--miller','-m', help='Miller index of facet, given as comma-separated list.',show_default=False)] = None, 
+        vacuum: Annotated[int, typer.Option('--vacuum','-v',help='Thickness of vacuum layer, in angstrom (Å). Default is 10 Å.',show_default=False)] = 10,
+        ):
+    '''
+    Generates surface structure based on bulk structure and user input. Bulk structure can be given as a file or as a Materials Project ID. Workflow will also prompt for supercell size and Miller index.
+    \nIf command line options are provided, workflow will bypass input sections for the provided information. 
+    \nNote: If using Materials Project, an API key MUST be provided. 
+    '''
+    create_structure(bulk,sc_size,miller,vacuum)
+
 @app.command()
 def modify(
         no_sym: Annotated[bool, typer.Option("--ignore-symmetry",'-i',help='Ignores symmetry, modifying individual atoms rather than pairs. If using this option, need ModsIdx.txt.')] = False
@@ -81,7 +99,7 @@ def modify(
 
 @app.command()
 def removepairs():
-    '''Removes atom pairs from structures '''
+    '''Removes atom pairs from structures. '''
     load_dotenv()
     element_name = process_vasp_inputs(os.getcwd())
     process_pairs_mod_dirs(os.getcwd(),element_name,'Removed',ignore_sym=False)
@@ -95,7 +113,7 @@ def addpairs():
     process_pairs_mod_dirs(os.getcwd(), element_name, 'Added', ignore_sym=False)
     process_directories(os.getenv('POT_PATH'), vac=False, add=True)
 
-@app.command()
+@app.command(short_help='Removes SINGLE atoms, ignoring symmetry.')
 def removeatoms():
     '''Removes SINGLE atoms, ignoring symmetry. NOTE: Ignoring symmetry greatly increases calculation time.'''
     load_dotenv()
@@ -103,7 +121,7 @@ def removeatoms():
     process_pairs_mod_dirs(os.getcwd(), element_name, 'Removed',ignore_sym= True)
     process_directories(os.getenv('POT_PATH'), vac = True, add = False)
 
-@app.command()
+@app.command(short_help='Adds SINGLE atoms to structures, ignoring symmetry.')
 def addatoms():
     '''Adds SINGLE atoms to structures, ignoring symmetry. NOTE: Ignoring symmetry greatly increases calculation time.'''
     load_dotenv()
@@ -113,14 +131,14 @@ def addatoms():
     
 @app.command()
 def gete():
-    '''Gets pristine E, E_vac, and E_ads.'''
+    '''Generates E_pristine, E_vac, and E_ads CSV files.'''
     get_all_e(os.getcwd())
     process_e_vac(os.getcwd())
     process_e_ads(os.getcwd())
     
 @app.command()
 def pdos():
-    '''sets up PDOS calculations'''
+    '''Sets up PDOS calculations'''
     pdos_vasp_inputs(os.getcwd())
     process_pdos_dirs(os.getcwd())
     
@@ -132,8 +150,8 @@ def parse():
     get_all_data(os.getcwd())
     
 @app.command()
-def integrate():
-    '''Integrates the PDOS files. Note: Files must be parsed before integration. The parse command parses AND integrates, so this command is only if integration needs to be performed on already parsed files. '''
+def integrate(short_help='Integrates already parsed PDOS files.'):
+    '''Integrates the PDOS files. \nNote: Files must be parsed before integration. The parse command parses AND integrates, so this command is only if integration needs to be performed on already parsed files. '''
     integrate_all_pdos(os.getcwd())
     get_all_data(os.getcwd())
     
@@ -144,7 +162,17 @@ def plot(
     '''Plots PDOS'''
     plot_pdos(os.getcwd(),no_show)
 
-@app.command()
+@app.command(short_help='Generates CHGDIFF.cube file and plots charge difference.')
+def chgdiff(
+        no_show:Annotated[bool,typer.Option('--no-show-image','-n',help='Do not display plot in X11 window after running command.',show_default=False)] = False,
+        ):
+    '''
+    Generates CHGDIFF.cube file from pristine and vacancy CHGCAR files and visualizes the charge difference. 
+    Note: CHGCAR files MUST have the same size real space grids.
+    '''
+    get_chgdiff(no_show)
+
+@app.command(short_help='Sets up band-structure calculations. Requires WAVECAR.')
 def bands(k: Annotated[str, typer.Option('--kpoints', '-k', help = 'The number of K points to use per line in KPOINTS_OPT file. Default is 10.')] = '10',
         ):
     '''Sets up band structure calculations using hybrid functionals. Note: Requires WAVECAR file from completed DFT structural optimization.'''
@@ -160,8 +188,9 @@ def submit(
         calc: Annotated[str, typer.Argument(help='The type of calculation to submit. Options: struc: Pristine or vacancy surface calculations. pdos: PDOS calculations. bands: Band structure calculations.')] = 'struc',
         vac:Annotated[bool,typer.Option("--vac","-v",help='Run only vacancy calculations. Does not work with calc = pdos')] = False,
         add: Annotated[bool,typer.Option("--add","-a",help='Run only adsorption calculations. Does not work with calc = pdos')] = False,
+        force: Annotated[bool, typer.Option("--force","-f",help="Submits ALL calculations, including those that have been run before.")] = False,
         ):
-    '''Submits vasp calculations.'''
+    '''Submits VASP calculations.'''
     pkgdir = sys.modules['delafossite_wf'].__path__[0]
     filedir = os.path.expanduser('~/wf-user-files')
     fullpath = os.path.join(filedir, 'vasp.sh')
@@ -178,7 +207,11 @@ def submit(
         calc_type = "PDOS"
     elif calc.lower() == 'bands':
         calc_type = "Band_struc"
-    os.system(f'bash {fpath} {calc_type}')
+    if force == True:
+        force = "true"
+    elif force == False:
+        force = "false"
+    os.system(f'bash {fpath} {calc_type} {force}')
         
 @app.command()
 def check(

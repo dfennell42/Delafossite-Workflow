@@ -1,8 +1,9 @@
 # Delafossite Modification Workflow CLI
 #### Author: Dorothea Fennell (dfennell1@bnl.gov, dfennell37@gmail.com)
-**Version**: 1.5.1
+**Version**: 1.6.0
 
 A command line interface tool designed to simplify running VASP calculations for delafossite materials. Given a base structure, the workflow can:
+- Create surface structures
 - Modify composition
 - Create vacancies
 - Submit calculations
@@ -57,6 +58,7 @@ $ wf [OPTIONS] COMMAND [ARGS]...
 **Commands**:
 
 * `init`: Initializes workflow settings.
+* `generate`: Generates surface structure based on bulk structure and user input.
 * `modify`: Modifies delafossite structure based on...
 * `removepairs`: Removes atom pairs from structures
 * `addpairs`: Adds pairs of atoms to structures.
@@ -67,6 +69,7 @@ $ wf [OPTIONS] COMMAND [ARGS]...
 * `parse`: Parses PDOS data into individual files and...
 * `integrate`: Integrates the PDOS files.
 * `plot`: Plots PDOS
+* `chgdiff`: Generates CHGDIFF.cube file and plots charge difference.
 * `bands`: Sets up band structure calculations using...
 * `getgap`: Gets band gap, Fermi energy, VBM, and CBM...
 * `submit`: Submits vasp calculations.
@@ -85,6 +88,28 @@ $ wf init [OPTIONS]
 
 **Options**:
 
+* `--help`: Show this message and exit.
+
+## `generate`
+
+Generates surface structure based on bulk structure and user input. Bulk structure can be given as a file or as a Materials Project ID. Workflow will also prompt for supercell size and Miller index.
+    
+If command line options are provided, workflow will bypass input sections for the provided information. 
+    
+Note: If using Materials Project, an API key MUST be provided.
+
+**Usage**:
+
+```console
+$ generate [OPTIONS]
+```
+
+**Options**:
+
+* `-b, --bulk TEXT`: Path to bulk file or Material Project ID.
+* `-s, --sc-size TEXT`: Supercell size given as set of vectors or list of scaling factors.
+* `-m, --miller TEXT`: Miller index of facet, given as comma-separated list.
+* `-v, --vacuum INTEGER`: Thickness of vacuum layer, in angstrom (Å). Default is 10 Å.
 * `--help`: Show this message and exit.
 
 ## `wf modify`
@@ -229,6 +254,21 @@ $ wf plot [OPTIONS]
 * `-n, --no-show-image`: Do not display plot in X11 window after running command.  [required]
 * `--help`: Show this message and exit.
 
+## `chgdiff`
+
+Generates CHGDIFF.cube file from pristine and vacancy CHGCAR files and visualizes the charge difference. 
+Note: CHGCAR files MUST have the same size real space grids.
+
+**Usage**:
+
+```console
+$ chgdiff [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
 ## `wf bands`
 
 Sets up band structure calculations using hybrid functionals. Note: Requires WAVECAR file from completed DFT structural optimization.
@@ -276,6 +316,7 @@ $ wf submit [OPTIONS] [CALC]
 
 * `-v, --vac`: Run only vacancy calculations. Does not work with calc = pdos
 * `-a, --add`: Run only adsorption calculations. Does not work with calc = pdos
+* `-f, --force`: Submits ALL calculations, including those that have been run before.
 * `--help`: Show this message and exit.
 
 ## `wf check`
